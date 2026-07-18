@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>仙台牛タン旅行プランナー</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --cream:#faf5ec; --paper:#fffdf8; --ink:#2b3038; --sub:#7a7365;
+  --line:#e8dfd0; --accent:#d9553f; --indigo:#31456e; --gold:#c8a24a;
+  --c-gyutan:#b23a3a; --c-izakaya:#7b6bb0; --c-cafe:#c9862f;
+  --c-kanko:#41785a; --c-onsen:#d1707c; --c-miyage:#4a6fa5;
+  --s-kouho:#9a9284; --s-kentou:#3f78c3; --s-kettei:#2e9163; --s-yoyaku:#8a5fc0;
+  color-scheme: light;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Zen Maru Gothic',sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;overflow:hidden}
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vertical-align:-0.12em}
+
+/* ---------- header ---------- */
+header{background:var(--indigo);color:#fdf9ef;padding:10px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.18);z-index:1200}
+header .title{font-family:'Shippori Mincho',serif;font-weight:800;font-size:21px;letter-spacing:.06em;display:flex;align-items:center;gap:10px}
+header .title .ic{font-size:22px;color:#f0c987}
+header .title .stamp{background:var(--accent);color:#fff;font-size:11px;padding:3px 9px;border-radius:999px;letter-spacing:.15em;font-family:'Zen Maru Gothic'}
+header .sub{font-size:12px;opacity:.75;letter-spacing:.08em}
+header .spacer{flex:1}
+header .tools{display:flex;gap:8px;align-items:center}
+header button{background:rgba(255,255,255,.12);color:#fdf9ef;border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s;display:flex;align-items:center;gap:5px}
+header button:hover{background:rgba(255,255,255,.24)}
+#syncState{display:flex;align-items:center;gap:6px;font-size:11.5px;padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+#syncState .sd{width:8px;height:8px;border-radius:50%;background:#e2b93b;flex-shrink:0}
+#syncState.ok .sd{background:#5fd18f}
+#syncState.err .sd{background:#f07d6a}
+
+/* ---------- layout ---------- */
+#app{flex:1;display:flex;min-height:0}
+aside{width:360px;min-width:300px;background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:1100;box-shadow:2px 0 12px rgba(90,70,40,.06)}
+main{flex:1;position:relative;min-width:0}
+#map{position:absolute;inset:0;background:#e9e2d2}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:11px 0;background:none;border:none;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--sub);cursor:pointer;border-bottom:3px solid transparent;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:6px}
+.tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ---------- filters ---------- */
+#filters{padding:12px 14px 8px;border-bottom:1px solid var(--line)}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{font-size:11.5px;padding:4px 10px;border-radius:999px;border:1.5px solid var(--line);background:#fff;cursor:pointer;user-select:none;color:var(--sub);transition:.15s;font-weight:500;display:flex;align-items:center;gap:4px}
+.chip.on{color:#fff;border-color:transparent}
+.chip[data-cat="牛タン"].on{background:var(--c-gyutan)}
+.chip[data-cat="居酒屋"].on{background:var(--c-izakaya)}
+.chip[data-cat="カフェ"].on{background:var(--c-cafe)}
+.chip[data-cat="観光"].on{background:var(--c-kanko)}
+.chip[data-cat="温泉"].on{background:var(--c-onsen)}
+.chip[data-cat="お土産"].on{background:var(--c-miyage)}
+.selrow{display:flex;gap:8px}
+.selrow select{flex:1;font-family:inherit;font-size:12px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+
+/* ---------- list ---------- */
+#panelList,#panelPlan{flex:1;overflow-y:auto;padding:10px 12px 30px}
+.areahead{font-family:'Shippori Mincho',serif;font-size:13px;font-weight:800;color:var(--indigo);margin:14px 4px 6px;display:flex;align-items:center;gap:8px;letter-spacing:.08em}
+.areahead::after{content:'';flex:1;height:1px;background:var(--line)}
+.areahead:first-child{margin-top:2px}
+.spot{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin-bottom:7px;cursor:pointer;transition:.15s;position:relative}
+.spot:hover{transform:translateX(3px);box-shadow:0 3px 10px rgba(120,90,40,.12);border-color:#d9ccb4}
+.spot.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(217,85,63,.18)}
+.spot .icn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2.5px solid;background:var(--cream)}
+.spot .icn .ic{font-size:18px}
+.spot .info{flex:1;min-width:0}
+.spot .name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spot .meta{display:flex;gap:6px;align-items:center;font-size:10.5px;color:var(--sub);margin-top:2px}
+.stars{color:var(--gold);letter-spacing:1px;font-size:11px}
+.pill{font-size:9.5px;padding:1.5px 7px;border-radius:999px;color:#fff;font-weight:700;flex-shrink:0}
+.daytag{font-size:9.5px;font-weight:700;padding:1.5px 6px;border-radius:5px;flex-shrink:0;border:1px solid}
+.d1{color:var(--accent);border-color:var(--accent);background:#fdf0ec}
+.d2{color:var(--indigo);border-color:var(--indigo);background:#eef1f8}
+.d0{color:#b3ab9c;border-color:#ddd5c5;background:#faf7f0}
+
+/* ---------- plan tab ---------- */
+.dayblock{margin-bottom:18px}
+.dayhead{display:flex;align-items:baseline;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:8px;color:#fff;font-family:'Shippori Mincho',serif;font-weight:800;letter-spacing:.1em}
+.dayhead .yen{margin-left:auto;font-family:'Zen Maru Gothic';font-size:12px;font-weight:700;opacity:.95}
+.dh1{background:linear-gradient(135deg,#d9553f,#c23a2c)}
+.dh2{background:linear-gradient(135deg,#31456e,#25355a)}
+.dh0{background:linear-gradient(135deg,#a89f8d,#8d8471)}
+.planitem{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin-bottom:6px}
+.planitem .picn{display:flex;font-size:15px}
+.planitem .pname{flex:1;font-size:12.5px;font-weight:700;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.planitem .pname:hover{color:var(--accent)}
+.planitem .pyen{font-size:11px;color:var(--sub)}
+.planitem .ord{display:flex;flex-direction:column;gap:1px}
+.planitem .ord button{border:none;background:var(--cream);border-radius:4px;width:18px;height:14px;font-size:8px;cursor:pointer;color:var(--sub);line-height:1}
+.planitem .ord button:hover{background:var(--line)}
+.total{background:var(--indigo);color:#fdf9ef;border-radius:12px;padding:12px 16px;margin-top:6px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.total b{font-size:17px;font-family:'Shippori Mincho',serif}
+.empty{font-size:11.5px;color:var(--sub);padding:4px 10px 8px}
+
+/* ---------- marker ---------- */
+.mk{position:relative;width:38px;height:38px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);border:3px solid;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;transition:.15s}
+.mk .mke{transform:rotate(45deg);display:flex}
+.mk .mke .ic{font-size:19px}
+.mk.done{box-shadow:0 0 0 4px rgba(46,145,99,.25),0 3px 8px rgba(0,0,0,.3)}
+.mk .badge{position:absolute;top:-7px;right:-7px;transform:rotate(45deg);width:17px;height:17px;border-radius:50%;color:#fff;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic';box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.mk .sdot{position:absolute;bottom:-2px;left:-2px;transform:rotate(45deg);width:11px;height:11px;border-radius:50%;border:2px solid #fff}
+.leaflet-tooltip.spot-tip{background:var(--ink);color:#fff;border:none;border-radius:8px;font-family:'Zen Maru Gothic';font-size:11.5px;font-weight:700;padding:4px 10px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.leaflet-tooltip-top.spot-tip::before{border-top-color:var(--ink)}
+
+/* ---------- detail card ---------- */
+#card{position:absolute;right:16px;bottom:16px;width:330px;max-width:calc(100% - 32px);background:var(--paper);border-radius:16px;box-shadow:0 10px 40px rgba(40,30,10,.3);z-index:1000;overflow:hidden;display:none;border:1px solid var(--line);max-height:calc(100% - 32px);overflow-y:auto}
+#card.show{display:block;animation:pop .18s ease}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#card .head{padding:14px 16px 10px;color:#fff;position:relative}
+#card .head .cn{font-family:'Shippori Mincho',serif;font-size:17px;font-weight:800;letter-spacing:.03em;padding-right:24px}
+#card .head .ca{font-size:11px;opacity:.85;margin-top:3px;display:flex;align-items:center;gap:4px}
+#card .close{position:absolute;top:10px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1}
+#card .body{padding:12px 16px 16px}
+.catrow{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.cattag{font-size:10px;color:#fff;padding:2px 9px;border-radius:999px;font-weight:700;display:flex;align-items:center;gap:4px}
+.memo{font-size:12px;line-height:1.75;color:#554e40;background:var(--cream);border-radius:10px;padding:9px 12px;margin-bottom:12px}
+.editgrid{display:grid;grid-template-columns:76px 1fr;gap:9px 10px;align-items:center;margin-bottom:12px}
+.editgrid label{font-size:11px;font-weight:700;color:var(--sub)}
+.editgrid select{font-family:inherit;font-size:12.5px;padding:6px 9px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);width:100%}
+.starpick{display:flex;gap:2px;font-size:19px;cursor:pointer;color:#ddd2ba}
+.starpick span.lit{color:var(--gold)}
+.starpick span:hover{transform:scale(1.15)}
+.budgetline{font-size:12.5px;margin-bottom:12px;display:flex;justify-content:space-between;background:#fff;border:1px dashed var(--line);border-radius:8px;padding:7px 12px}
+.budgetline b{color:var(--accent)}
+.notebox{width:100%;font-family:inherit;font-size:12px;border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;resize:vertical;min-height:34px;background:#fff;color:var(--ink)}
+.links{display:flex;gap:8px;margin-top:11px}
+.links a{flex:1;text-align:center;font-size:12px;font-weight:700;text-decoration:none;padding:8px 0;border-radius:9px;transition:.15s}
+.links a.web{background:var(--indigo);color:#fff}
+.links a.gmap{border:1.5px solid var(--indigo);color:var(--indigo)}
+.links a:hover{opacity:.85}
+
+/* ---------- legend ---------- */
+#legend{position:absolute;left:12px;bottom:12px;background:rgba(255,253,248,.94);border:1px solid var(--line);border-radius:12px;padding:9px 13px;z-index:900;font-size:11px;box-shadow:0 3px 12px rgba(60,45,20,.12);backdrop-filter:blur(4px)}
+#legend .lrow{display:flex;align-items:center;gap:7px;margin:2.5px 0}
+#legend .lic{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+#legend .lic .ic{font-size:10px;stroke-width:2.2}
+#legend .ltitle{font-weight:700;font-size:10.5px;color:var(--sub);letter-spacing:.1em;margin-bottom:3px}
+
+/* toast */
+#toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:12.5px;padding:8px 20px;border-radius:999px;z-index:2000;opacity:0;transition:.3s;pointer-events:none}
+#toast.show{opacity:.94}
+
+@media(max-width:760px){
+  #app{flex-direction:column-reverse}
+  aside{width:100%;min-width:0;height:45%;border-right:none;border-top:1px solid var(--line)}
+  #card{width:calc(100% - 24px);right:12px;bottom:12px}
+  #legend{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SVG icon sprite ============ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <!-- 牛の顔（牛タン） -->
+  <symbol id="i-gyutan" viewBox="0 0 24 24">
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="M12 4.2c-1.6 0-3 .6-3.9 1.6-1-.9-2.9-1-3.6.1-.6 1 .3 2.2 1.9 2.5-.2.5-.3 1.1-.3 1.7 0 .8.2 1.5.6 2.1-.9.7-1.5 1.8-1.5 3 0 2.7 2.4 4.4 6.8 4.4s6.8-1.7 6.8-4.4c0-1.2-.6-2.3-1.5-3 .4-.6.6-1.3.6-2.1 0-.6-.1-1.2-.3-1.7 1.6-.3 2.5-1.5 1.9-2.5-.7-1.1-2.6-1-3.6-.1-.9-1-2.3-1.6-3.9-1.6zM9.5 14.4a1.1 1.3 0 1 0 .001 0zM14.5 14.4a1.1 1.3 0 1 0 .001 0z"/>
+  </symbol>
+  <!-- 徳利とお猪口（居酒屋） -->
+  <symbol id="i-izakaya" viewBox="0 0 24 24">
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="M7.8 2.5h4v2.8c2.1.9 3.1 2.6 3.1 4.6V18a2 2 0 0 1-2 2H6.7a2 2 0 0 1-2-2v-8.1c0-2 1-3.7 3.1-4.6V2.5zM5.9 9.3h7.8V11H5.9V9.3z"/>
+    <path fill="currentColor" stroke="none" d="M16.3 14.5h5.4c-.1 3-1.3 5.2-2.7 5.2s-2.6-2.2-2.7-5.2z"/>
+  </symbol>
+  <!-- 三色団子（カフェ・甘味） -->
+  <symbol id="i-cafe" viewBox="0 0 24 24">
+    <path stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" d="M12 21.5V4"/>
+    <circle fill="currentColor" stroke="none" cx="12" cy="6" r="2.7"/>
+    <circle fill="currentColor" stroke="none" cx="12" cy="11.5" r="2.7"/>
+    <circle fill="currentColor" stroke="none" cx="12" cy="17" r="2.7"/>
+  </symbol>
+  <!-- 鳥居（観光） -->
+  <symbol id="i-kanko" viewBox="0 0 24 24">
+    <path fill="currentColor" stroke="none" d="M2.6 4.4C5.6 3.4 8.8 3 12 3s6.4.4 9.4 1.4l-.4 2.8H3l-.4-2.8z"/>
+    <path fill="currentColor" stroke="none" d="M4.6 9.3h14.8v2H4.6z"/>
+    <path fill="currentColor" stroke="none" d="M5.7 7.2h2.4l-.6 13.8H5.1zM15.9 7.2h2.4l.6 13.8h-2.4zM10.9 7.2h2.2v2.1h-2.2z"/>
+  </symbol>
+  <!-- 温泉マーク（温泉） -->
+  <symbol id="i-onsen" viewBox="0 0 24 24">
+    <path fill="currentColor" stroke="none" d="M3.4 13.8h17.2c0 3.7-3.8 6.2-8.6 6.2s-8.6-2.5-8.6-6.2z"/>
+    <path stroke="currentColor" stroke-width="2.1" fill="none" stroke-linecap="round" d="M7.9 3.5c-1 1.7 1 2.6 0 4.6M12 3.5c-1 1.7 1 2.6 0 4.6M16.1 3.5c-1 1.7 1 2.6 0 4.6"/>
+  </symbol>
+  <!-- リボン付きギフト（お土産） -->
+  <symbol id="i-miyage" viewBox="0 0 24 24">
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="M4 11h16v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8zm6.9 0h2.2v10h-2.2V11z"/>
+    <path fill="currentColor" stroke="none" fill-rule="evenodd" d="M3 6.6h18v3.6H3V6.6zm7.9 0h2.2v3.6h-2.2V6.6z"/>
+    <path fill="currentColor" stroke="none" d="M12 6.3C8.9 6.3 7.3 4 9.3 2.9c1.6-.9 2.7 1.3 2.7 3.4zM12 6.3c3.1 0 4.7-2.3 2.7-3.4-1.6-.9-2.7 1.3-2.7 3.4z"/>
+  </symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8.5"/>
+    <path d="M15.5 8.5 13.4 13.4 8.5 15.5l2.1-4.9z"/>
+  </symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24">
+    <path d="M12 21s-6.5-5.3-6.5-10.2A6.5 6.5 0 0 1 12 4.3a6.5 6.5 0 0 1 6.5 6.5C18.5 15.7 12 21 12 21z"/>
+    <circle cx="12" cy="10.7" r="2.3"/>
+  </symbol>
+  <symbol id="i-book" viewBox="0 0 24 24">
+    <path d="M12 6.5C10.5 5 8 4.5 4.5 4.5v13.7c3.5 0 6 .5 7.5 2 1.5-1.5 4-2 7.5-2V4.5c-3.5 0-6 .5-7.5 2z"/>
+    <path d="M12 6.5v13.7"/>
+  </symbol>
+  <symbol id="i-save" viewBox="0 0 24 24">
+    <path d="M12 4v10.5M12 14.5l-3.8-3.8M12 14.5l3.8-3.8"/>
+    <path d="M4.5 15.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2.5"/>
+  </symbol>
+  <symbol id="i-load" viewBox="0 0 24 24">
+    <path d="M12 14.5V4M12 4 8.2 7.8M12 4l3.8 3.8"/>
+    <path d="M4.5 15.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2.5"/>
+  </symbol>
+  <symbol id="i-link" viewBox="0 0 24 24">
+    <path d="M9.5 14.5 14.5 9.5"/>
+    <path d="M11 6.8 13 4.8a3.5 3.5 0 0 1 5 5l-2 2M13 17.2l-2 2a3.5 3.5 0 0 1-5-5l2-2"/>
+  </symbol>
+</svg>
+
+<header>
+  <div class="title"><svg class="ic"><use href="#i-compass"/></svg> 仙台牛タン旅行 <span class="stamp">ふたり旅</span></div>
+  <div class="sub">地図から選んで、プランを組み立てる旅のしおり</div>
+  <div class="spacer"></div>
+  <div class="tools">
+    <a href="./index.html" style="background:rgba(255,255,255,.12);color:#fdf9ef;border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 12px;font-size:12px;text-decoration:none">📖 しおり</a>
+    <span id="syncState"><span class="sd"></span><span id="syncLabel">JSON未接続</span></span>
+    <button id="btnFile"><svg class="ic"><use href="#i-link"/></svg> JSONと連携</button>
+    <button id="btnExport" title="編集データをJSONファイルとして書き出し"><svg class="ic"><use href="#i-save"/></svg> 書き出し</button>
+    <button id="btnImport" title="JSONファイルを読み込み"><svg class="ic"><use href="#i-load"/></svg> 読み込み</button>
+    <button id="btnReset">リセット</button>
+    <input type="file" id="fileImport" accept=".json" style="display:none">
+  </div>
+</header>
+
+<div id="app">
+<aside>
+  <div class="tabs">
+    <button id="tabList" class="active"><svg class="ic"><use href="#i-pin"/></svg> スポット一覧</button>
+    <button id="tabPlan"><svg class="ic"><use href="#i-book"/></svg> 旅のしおり</button>
+  </div>
+  <div id="filters">
+    <div class="chiprow" id="catChips"></div>
+    <div class="selrow">
+      <select id="fStatus">
+        <option value="">ステータス: すべて</option>
+        <option>候補</option><option>検討中</option><option>決定</option><option>予約済</option>
+      </select>
+      <select id="fDay">
+        <option value="">日程: すべて</option>
+        <option value="1">1日目</option><option value="2">2日目</option><option value="0">未定</option>
+      </select>
+    </div>
+  </div>
+  <div id="panelList"></div>
+  <div id="panelPlan" style="display:none"></div>
+</aside>
+
+<main>
+  <div id="map"></div>
+  <div id="legend">
+    <div class="ltitle">カテゴリ</div>
+    <div class="lrow"><span class="lic" style="background:var(--c-gyutan)"><svg class="ic"><use href="#i-gyutan"/></svg></span>牛タン</div>
+    <div class="lrow"><span class="lic" style="background:var(--c-kanko)"><svg class="ic"><use href="#i-kanko"/></svg></span>観光・レジャー</div>
+    <div class="lrow"><span class="lic" style="background:var(--c-onsen)"><svg class="ic"><use href="#i-onsen"/></svg></span>温泉</div>
+    <div class="lrow"><span class="lic" style="background:var(--c-cafe)"><svg class="ic"><use href="#i-cafe"/></svg></span>カフェ・甘味</div>
+    <div class="lrow"><span class="lic" style="background:var(--c-izakaya)"><svg class="ic"><use href="#i-izakaya"/></svg></span>居酒屋</div>
+    <div class="lrow"><span class="lic" style="background:var(--c-miyage)"><svg class="ic"><use href="#i-miyage"/></svg></span>お土産</div>
+  </div>
+
+  <div id="card">
+    <div class="head" id="cardHead">
+      <button class="close" id="cardClose">✕</button>
+      <div class="cn" id="cardName"></div>
+      <div class="ca" id="cardArea"></div>
+    </div>
+    <div class="body">
+      <div class="catrow" id="cardCats"></div>
+      <div class="memo" id="cardMemo"></div>
+      <div class="budgetline"><span>予算目安（1人）</span><b id="cardBudget"></b></div>
+      <div class="editgrid">
+        <label>おすすめ度</label><div class="starpick" id="cardStars"></div>
+        <label>ステータス</label>
+        <select id="cardStatus">
+          <option>候補</option><option>検討中</option><option>決定</option><option>予約済</option>
+        </select>
+        <label>日程</label>
+        <select id="cardDay">
+          <option value="0">未定</option><option value="1">1日目</option><option value="2">2日目</option>
+        </select>
+      </div>
+      <textarea class="notebox" id="cardNote" placeholder="ふたりのメモ（例: 11時に予約したい / シェイクは別腹）"></textarea>
+      <div class="links">
+        <a class="web" id="cardWeb" target="_blank" rel="noopener">公式・詳細</a>
+        <a class="gmap" id="cardGmap" target="_blank" rel="noopener">Googleマップ</a>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= data ================= */
+const CAT_COLOR = {"牛タン":"#b23a3a","居酒屋":"#7b6bb0","カフェ":"#c9862f","観光":"#41785a","温泉":"#d1707c","お土産":"#4a6fa5"};
+const CAT_ICON  = {"牛タン":"i-gyutan","居酒屋":"i-izakaya","カフェ":"i-cafe","観光":"i-kanko","温泉":"i-onsen","お土産":"i-miyage"};
+const STATUS_COLOR = {"候補":"#9a9284","検討中":"#3f78c3","決定":"#2e9163","予約済":"#8a5fc0"};
+function icon(name, extra){ return `<svg class="ic" ${extra||""}><use href="#${name}"/></svg>`; }
+function catIcon(cat, extra){ return icon(CAT_ICON[cat], extra); }
+
+const SPOTS = [
+{id:"ajitasuke", name:"味太助 本店", area:"仙台駅周辺", cats:["牛タン"], budget:2500, lat:38.2617, lng:140.8710, rating:4,
+ url:"http://www.aji-tasuke.co.jp/", memo:"牛タン焼発祥の店。国分町の老舗で、定食一人前半 約2,035円〜。昔ながらのカウンターの雰囲気が良い。"},
+{id:"rikyu", name:"牛たん炭焼 利久", area:"仙台駅周辺", cats:["牛タン"], budget:2500, lat:38.2578, lng:140.8843, rating:4,
+ url:"https://www.rikyu-gyutan.co.jp/", memo:"厚切り「極」定食が名物の人気チェーン。市内に多数店舗があり、駅構内でも食べられて便利。"},
+{id:"zenjiro", name:"たんや善治郎 駅前本店", area:"仙台駅周辺", cats:["牛タン"], budget:2300, lat:38.2620, lng:140.8802, rating:5,
+ url:"https://tanya-zenjirou.jp/", memo:"塩にこだわる人気店。牛タン定食(3枚6切)税込2,310円。平日ランチは麦飯おかわり1回無料。"},
+{id:"kisuke", name:"牛たん炭火焼 喜助", area:"仙台駅周辺", cats:["牛タン"], budget:2400, lat:38.2609, lng:140.8794, rating:4,
+ url:"https://www.kisuke.co.jp/", memo:"しお・たれ・みその3種の味から選べる老舗。ふたりで頼み分けて食べ比べるのも楽しい。"},
+{id:"asaichi", name:"仙台朝市 食べ歩き", area:"仙台駅周辺", cats:["観光","カフェ"], budget:1500, lat:38.2582, lng:140.8794, rating:4,
+ url:"https://sendaiasaichi.com/", memo:"仙台駅西口徒歩5分、約60店の市場通り。海鮮丼や花笠だんご本舗のずんだ団子（午前中に売切れ多）。朝〜昼が狙い目。"},
+{id:"azumaya", name:"地酒と旬味 東家（仙台朝市）", area:"仙台駅周辺", cats:["居酒屋"], budget:3500, lat:38.2585, lng:140.8790, rating:3,
+ url:"https://loco.kufu.jp/sendai/articles/original/3499", memo:"朝市入口の老舗。刺身12種前後の「おみくじ丼」が名物。夜は地酒と海鮮でゆっくり。"},
+{id:"zunda", name:"ずんだ茶寮（ずんだシェイク）", area:"仙台駅周辺", cats:["カフェ","お土産"], budget:800, lat:38.2600, lng:140.8822, rating:5,
+ url:"https://zundasaryo.com/", memo:"仙台駅3F「ずんだ小径」。ずんだシェイクは食べ歩きの定番。帰りにお土産のずんだ餅も買える。"},
+{id:"abekama", name:"阿部蒲鉾店 本店（ひょうたん揚げ）", area:"仙台駅周辺", cats:["お土産","カフェ"], budget:1000, lat:38.2626, lng:140.8747, rating:4,
+ url:"https://www.abekama.co.jp/", memo:"アーケード街の食べ歩き名物ひょうたん揚げ。おみくじ付きで盛り上がる。お土産の笹かまも定番。"},
+{id:"zuihoden", name:"瑞鳳殿", area:"仙台駅周辺", cats:["観光"], budget:700, lat:38.2496, lng:140.8656, rating:4,
+ url:"https://www.zuihoden.com/", memo:"伊達政宗の霊廟。豪華絢爛な桃山様式と杉並木が見事。観光バス「るーぷる仙台」で行ける。"},
+{id:"aoba", name:"仙台城跡（青葉城）", area:"仙台駅周辺", cats:["観光"], budget:0, lat:38.2517, lng:140.8560, rating:4,
+ url:"https://honmarukaikan.com/", memo:"伊達政宗騎馬像と仙台市街の一望。夕方〜夜景はカップルの定番スポット。入場無料。"},
+{id:"jozenji", name:"定禅寺通 ケヤキ並木散策", area:"仙台駅周辺", cats:["観光"], budget:0, lat:38.2673, lng:140.8697, rating:3,
+ url:"https://www.sentabi.jp/", memo:"杜の都のシンボルストリート。散歩デートに。周辺はカフェや国分町の飲み屋街も近い。"},
+{id:"uminomori", name:"仙台うみの杜水族館", area:"仙台港", cats:["観光"], budget:2400, lat:38.2687, lng:141.0225, rating:3,
+ url:"https://www.uminomori.jp/", memo:"大人2,400円。イルカショーが人気。仙台港エリアなのでアウトレットと組み合わせても。"},
+{id:"yuransen", name:"松島島巡り観光船（仁王丸）", area:"松島", cats:["観光"], budget:1500, lat:38.3672, lng:141.0621, rating:5,
+ url:"https://www.matsushima.or.jp/", memo:"日本三景・松島湾を50分で一周。大人1,500円（キャンペーンで900円の時期も）。2階席がおすすめ。"},
+{id:"entuin", name:"円通院", area:"松島", cats:["観光"], budget:500, lat:38.3697, lng:141.0589, rating:5,
+ url:"https://www.entuuin.or.jp/", memo:"縁結びの寺としてカップルに人気。拝観500円。ふたりで数珠作り体験（約1,000〜3,000円）ができる。"},
+{id:"zuiganji", name:"瑞巌寺", area:"松島", cats:["観光"], budget:1000, lat:38.3714, lng:141.0594, rating:4,
+ url:"https://www.zuiganji.or.jp/", memo:"伊達政宗が再建した国宝。2026年4月に拝観料改定あり（要公式確認）。"},
+{id:"akiu", name:"秋保温泉 日帰り入浴", area:"秋保・作並", cats:["温泉"], budget:1000, lat:38.2330, lng:140.7220, rating:5,
+ url:"https://akiusato.jp/", memo:"開湯1500年・日本三御湯。日帰り入浴 約900円〜、貸切風呂2,000円〜（ホテル華乃湯など）。仙台駅からバス約35分。"},
+{id:"akiuotaki", name:"秋保大滝・磊々峡 散策", area:"秋保・作並", cats:["観光"], budget:0, lat:38.2264, lng:140.6272, rating:4,
+ url:"https://akiusato.jp/", memo:"日本三名瀑の秋保大滝と渓谷・磊々峡。秋保温泉とセットで半日コースにするのが定番。"},
+{id:"sakunami", name:"作並温泉 日帰り入浴", area:"秋保・作並", cats:["温泉"], budget:1500, lat:38.3060, lng:140.6350, rating:3,
+ url:"https://sakunami-spa.com/", memo:"広瀬川上流の絶景露天風呂。日帰り入浴の時間が短い施設が多いので事前確認を。ニッカ蒸溜所見学と合わせても。"}
+];
+const AREA_ORDER = ["仙台駅周辺","松島","秋保・作並","仙台港"];
+
+/* ================= state ================= */
+const LS_KEY = "sendai-trip-planner-v1";
+let store = {};
+try{ store = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ store = {}; }
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){}
+  scheduleFileWrite();
+}
+function st(id){ if(!store[id]) store[id] = {}; return store[id]; }
+function getV(s, key){
+  const o = store[s.id] || {};
+  if(key === "status") return o.status ?? "候補";
+  if(key === "day")    return o.day ?? 0;
+  if(key === "rating") return o.rating ?? s.rating;
+  if(key === "note")   return o.note ?? "";
+  if(key === "order")  return o.order ?? 999;
+  return undefined;
+}
+function setV(s, key, val){ st(s.id)[key] = val; save(); refreshAll(); }
+
+let filters = { cats:new Set(), status:"", day:"" };
+let selectedId = null;
+
+/* ================= JSON file sync (File System Access API) ================= */
+const DATA_FILE = "sendai_trip_data.json";
+const hasFS = "showOpenFilePicker" in window;
+let fileHandle = null, fileTimer = null;
+
+function setSync(state, label){
+  const el = document.getElementById("syncState");
+  el.classList.remove("ok","err");
+  if(state==="ok") el.classList.add("ok");
+  if(state==="err") el.classList.add("err");
+  document.getElementById("syncLabel").textContent = label;
+}
+function idb(){
+  return new Promise((res,rej)=>{
+    const r = indexedDB.open("sendai-planner",1);
+    r.onupgradeneeded = ()=> r.result.createObjectStore("h");
+    r.onsuccess = ()=> res(r.result);
+    r.onerror = ()=> rej(r.error);
+  });
+}
+async function idbSet(k,v){ const d = await idb(); return new Promise((res,rej)=>{ const t = d.transaction("h","readwrite"); t.objectStore("h").put(v,k); t.oncomplete = res; t.onerror = ()=>rej(t.error); }); }
+async function idbGet(k){ const d = await idb(); return new Promise((res,rej)=>{ const q = d.transaction("h").objectStore("h").get(k); q.onsuccess = ()=>res(q.result); q.onerror = ()=>rej(q.error); }); }
+
+async function readFromFile(){
+  const f = await fileHandle.getFile();
+  const txt = await f.text();
+  if(txt.trim()){
+    const data = JSON.parse(txt);
+    if(data && typeof data === "object"){ store = data; try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){} }
+  }
+}
+async function writeToFile(){
+  if(!fileHandle) return;
+  try{
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(store, null, 2));
+    await w.close();
+    setSync("ok", DATA_FILE + " に保存済");
+  }catch(e){ setSync("err","書き込み失敗"); }
+}
+function scheduleFileWrite(){
+  if(!fileHandle) return;
+  setSync("ok","保存中…");
+  clearTimeout(fileTimer);
+  fileTimer = setTimeout(writeToFile, 600);
+}
+async function connectFile(pickNew){
+  try{
+    if(!fileHandle || pickNew){
+      const [h] = await window.showOpenFilePicker({
+        types:[{description:"旅行プランJSON", accept:{"application/json":[".json"]}}],
+        excludeAcceptAllOption:false, multiple:false
+      });
+      fileHandle = h;
+      await idbSet("data", h);
+    }
+    const p = await fileHandle.requestPermission({mode:"readwrite"});
+    if(p !== "granted"){ setSync("err","権限がありません"); return; }
+    await readFromFile();
+    refreshAll();
+    setSync("ok", fileHandle.name + " と連携中");
+    toast("JSONファイルと連携しました。以降の編集は自動保存されます");
+  }catch(e){
+    if(e && e.name === "AbortError") return;
+    setSync("err","連携に失敗しました");
+  }
+}
+async function initFile(){
+  if(!hasFS){
+    setSync("err","このブラウザは直接連携非対応（書き出し/読み込みを使用）");
+    document.getElementById("btnFile").style.display = "none";
+    return;
+  }
+  try{
+    const h = await idbGet("data");
+    if(h){
+      fileHandle = h;
+      const p = await h.queryPermission({mode:"readwrite"});
+      if(p === "granted"){
+        await readFromFile(); refreshAll();
+        setSync("ok", h.name + " と連携中");
+      }else{
+        setSync("", "クリックで " + h.name + " に再接続");
+      }
+    }else{
+      setSync("", DATA_FILE + " を選んで連携");
+    }
+  }catch(e){ setSync("", "JSON未接続"); }
+}
+document.getElementById("btnFile").onclick = ()=> connectFile(false);
+document.getElementById("syncState").onclick = ()=>{ if(hasFS) connectFile(false); };
+document.getElementById("syncState").style.cursor = "pointer";
+
+/* ================= map ================= */
+const map = L.map("map", {zoomControl:false});
+L.control.zoom({position:"topright"}).addTo(map);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+  maxZoom:19
+}).addTo(map);
+map.fitBounds(L.latLngBounds(SPOTS.map(s=>[s.lat,s.lng])).pad(0.12));
+
+const markers = {};
+function markerIcon(s){
+  const cat = s.cats[0], col = CAT_COLOR[cat];
+  const status = getV(s,"status"), day = getV(s,"day");
+  const done = (status==="決定" || status==="予約済");
+  const badge = day>0 ? `<span class="badge" style="background:${day===1?'#d9553f':'#31456e'}">${day}</span>` : "";
+  const sdot = `<span class="sdot" style="background:${STATUS_COLOR[status]}"></span>`;
+  const bg = done ? col : "#fff";
+  const icol = done ? "#fff" : col;
+  return L.divIcon({
+    className:"",
+    html:`<div class="mk ${done?'done':''}" style="border-color:${col};background:${bg}"><span class="mke" style="color:${icol}">${catIcon(cat)}</span>${badge}${sdot}</div>`,
+    iconSize:[38,38], iconAnchor:[19,36], tooltipAnchor:[0,-34]
+  });
+}
+SPOTS.forEach(s=>{
+  const m = L.marker([s.lat,s.lng], {icon:markerIcon(s)}).addTo(map);
+  m.bindTooltip(s.name, {direction:"top", className:"spot-tip"});
+  m.on("click", ()=> openCard(s.id, false));
+  markers[s.id] = m;
+});
+
+/* ================= filters ui ================= */
+const catChips = document.getElementById("catChips");
+Object.keys(CAT_COLOR).forEach(cat=>{
+  const c = document.createElement("span");
+  c.className = "chip"; c.dataset.cat = cat;
+  c.innerHTML = catIcon(cat) + " " + cat;
+  c.onclick = ()=>{
+    if(filters.cats.has(cat)) filters.cats.delete(cat); else filters.cats.add(cat);
+    c.classList.toggle("on");
+    refreshAll();
+  };
+  catChips.appendChild(c);
+});
+document.getElementById("fStatus").onchange = e=>{ filters.status = e.target.value; refreshAll(); };
+document.getElementById("fDay").onchange = e=>{ filters.day = e.target.value; refreshAll(); };
+
+function passFilter(s){
+  if(filters.cats.size && !s.cats.some(c=>filters.cats.has(c))) return false;
+  if(filters.status && getV(s,"status")!==filters.status) return false;
+  if(filters.day!=="" && String(getV(s,"day"))!==filters.day) return false;
+  return true;
+}
+
+/* ================= list ================= */
+function starsTxt(n){ return "★".repeat(n) + "☆".repeat(5-n); }
+function renderList(){
+  const el = document.getElementById("panelList");
+  el.innerHTML = "";
+  AREA_ORDER.forEach(area=>{
+    const items = SPOTS.filter(s=>s.area===area && passFilter(s));
+    if(!items.length) return;
+    const h = document.createElement("div");
+    h.className = "areahead"; h.textContent = `${area}（${items.length}）`;
+    el.appendChild(h);
+    items.forEach(s=>{
+      const status = getV(s,"status"), day = getV(s,"day");
+      const d = document.createElement("div");
+      d.className = "spot" + (s.id===selectedId?" selected":"");
+      const col = CAT_COLOR[s.cats[0]];
+      d.innerHTML = `
+        <div class="icn" style="border-color:${col};color:${col}">${catIcon(s.cats[0])}</div>
+        <div class="info">
+          <div class="name">${s.name}</div>
+          <div class="meta"><span class="stars">${starsTxt(getV(s,"rating"))}</span>
+            <span>${s.budget>0 ? "¥"+s.budget.toLocaleString() : "無料"}</span></div>
+        </div>
+        <span class="daytag ${day===1?'d1':day===2?'d2':'d0'}">${day>0? day+"日目":"未定"}</span>
+        <span class="pill" style="background:${STATUS_COLOR[status]}">${status}</span>`;
+      d.onclick = ()=> openCard(s.id, true);
+      el.appendChild(d);
+    });
+  });
+  if(!el.children.length) el.innerHTML = '<div class="empty">条件に合うスポットがありません</div>';
+}
+
+/* ================= plan ================= */
+function renderPlan(){
+  const el = document.getElementById("panelPlan");
+  el.innerHTML = "";
+  let grand = 0;
+  [[1,"1日目","dh1"],[2,"2日目","dh2"],[0,"未定・気になるリスト","dh0"]].forEach(([day,label,cls])=>{
+    const list = SPOTS.filter(s=>getV(s,"day")===day).sort((a,b)=>getV(a,"order")-getV(b,"order"));
+    const sum = list.reduce((t,s)=>t+s.budget,0);
+    if(day>0) grand += sum;
+    const block = document.createElement("div");
+    block.className = "dayblock";
+    block.innerHTML = `<div class="dayhead ${cls}"><span>${label}</span><span class="yen">${day>0?"予算計 ¥"+sum.toLocaleString():list.length+"件"}</span></div>`;
+    if(!list.length){
+      const e = document.createElement("div"); e.className="empty";
+      e.textContent = day>0 ? "スポットの「日程」でこの日に追加できます" : "すべて振り分け済み";
+      block.appendChild(e);
+    }
+    list.forEach((s,i)=>{
+      const col = CAT_COLOR[s.cats[0]];
+      const it = document.createElement("div");
+      it.className = "planitem";
+      it.innerHTML = `
+        <span class="picn" style="color:${col}">${catIcon(s.cats[0])}</span>
+        <span class="pname">${s.name}</span>
+        <span class="pill" style="background:${STATUS_COLOR[getV(s,"status")]}">${getV(s,"status")}</span>
+        <span class="pyen">${s.budget>0?"¥"+s.budget.toLocaleString():"無料"}</span>
+        ${day>0?`<span class="ord">
+          <button data-mv="-1" title="上へ">▲</button>
+          <button data-mv="1" title="下へ">▼</button></span>`:""}`;
+      it.querySelector(".pname").onclick = ()=> openCard(s.id, true);
+      it.querySelectorAll(".ord button").forEach(b=>{
+        b.onclick = (ev)=>{
+          ev.stopPropagation();
+          const dir = +b.dataset.mv, j = i + dir;
+          if(j<0 || j>=list.length) return;
+          list.forEach((x,k)=> st(x.id).order = k);
+          const tmp = st(list[i].id).order;
+          st(list[i].id).order = st(list[j].id).order;
+          st(list[j].id).order = tmp;
+          save(); refreshAll();
+        };
+      });
+      block.appendChild(it);
+    });
+    el.appendChild(block);
+  });
+  const t = document.createElement("div");
+  t.className = "total";
+  t.innerHTML = `<span>ふたり分の予算目安（1・2日目 ×2人）</span><b>¥${(grand*2).toLocaleString()}</b>`;
+  el.appendChild(t);
+}
+
+/* ================= tabs ================= */
+const tabList = document.getElementById("tabList"), tabPlan = document.getElementById("tabPlan");
+tabList.onclick = ()=>{ tabList.classList.add("active"); tabPlan.classList.remove("active");
+  document.getElementById("panelList").style.display=""; document.getElementById("panelPlan").style.display="none";
+  document.getElementById("filters").style.display=""; };
+tabPlan.onclick = ()=>{ tabPlan.classList.add("active"); tabList.classList.remove("active");
+  document.getElementById("panelList").style.display="none"; document.getElementById("panelPlan").style.display="";
+  document.getElementById("filters").style.display="none"; };
+
+/* ================= detail card ================= */
+const card = document.getElementById("card");
+let cardSpot = null;
+function openCard(id, fly){
+  const s = SPOTS.find(x=>x.id===id); if(!s) return;
+  cardSpot = s; selectedId = id;
+  const col = CAT_COLOR[s.cats[0]];
+  document.getElementById("cardHead").style.background = `linear-gradient(135deg, ${col}, ${shade(col,-25)})`;
+  document.getElementById("cardName").textContent = s.name;
+  document.getElementById("cardArea").innerHTML = icon("i-pin") + " " + s.area;
+  document.getElementById("cardCats").innerHTML = s.cats.map(c=>`<span class="cattag" style="background:${CAT_COLOR[c]}">${catIcon(c)} ${c}</span>`).join("");
+  document.getElementById("cardMemo").textContent = s.memo;
+  document.getElementById("cardBudget").textContent = s.budget>0 ? "¥"+s.budget.toLocaleString() : "無料";
+  document.getElementById("cardStatus").value = getV(s,"status");
+  document.getElementById("cardDay").value = String(getV(s,"day"));
+  document.getElementById("cardNote").value = getV(s,"note");
+  document.getElementById("cardWeb").href = s.url;
+  document.getElementById("cardGmap").href = `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+  renderStarPick(s);
+  card.classList.add("show");
+  if(fly) map.flyTo([s.lat,s.lng], Math.max(map.getZoom(),14), {duration:.7});
+  renderList();
+}
+function renderStarPick(s){
+  const el = document.getElementById("cardStars");
+  el.innerHTML = "";
+  const r = getV(s,"rating");
+  for(let i=1;i<=5;i++){
+    const sp = document.createElement("span");
+    sp.textContent = "★"; sp.className = i<=r ? "lit":"";
+    sp.onclick = ()=> setV(s,"rating",i);
+    el.appendChild(sp);
+  }
+}
+document.getElementById("cardClose").onclick = ()=>{ card.classList.remove("show"); selectedId=null; renderList(); };
+document.getElementById("cardStatus").onchange = e=>{ if(cardSpot){ setV(cardSpot,"status",e.target.value); toast("ステータスを「"+e.target.value+"」に変更しました"); } };
+document.getElementById("cardDay").onchange = e=>{ if(cardSpot){ setV(cardSpot,"day",+e.target.value); toast(+e.target.value>0 ? e.target.value+"日目に追加しました" : "日程を未定に戻しました"); } };
+document.getElementById("cardNote").oninput = e=>{ if(cardSpot){ st(cardSpot.id).note = e.target.value; save(); } };
+
+function shade(hex,p){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+p, g=((n>>8)&255)+p, b=(n&255)+p;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0");
+}
+
+/* ================= refresh ================= */
+function refreshAll(){
+  SPOTS.forEach(s=>{
+    markers[s.id].setIcon(markerIcon(s));
+    if(passFilter(s)){ if(!map.hasLayer(markers[s.id])) markers[s.id].addTo(map); }
+    else { if(map.hasLayer(markers[s.id])) map.removeLayer(markers[s.id]); }
+  });
+  renderList(); renderPlan();
+  if(cardSpot && card.classList.contains("show")){
+    document.getElementById("cardStatus").value = getV(cardSpot,"status");
+    document.getElementById("cardDay").value = String(getV(cardSpot,"day"));
+    renderStarPick(cardSpot);
+  }
+}
+
+/* ================= toast / export ================= */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"),2200);
+}
+document.getElementById("btnExport").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(store,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = DATA_FILE; a.click();
+  URL.revokeObjectURL(a.href);
+  toast("プランを書き出しました");
+};
+document.getElementById("btnImport").onclick = ()=> document.getElementById("fileImport").click();
+document.getElementById("fileImport").onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{ try{ store = JSON.parse(rd.result)||{}; save(); refreshAll(); toast("プランを読み込みました"); }catch(err){ toast("読み込みに失敗しました"); } };
+  rd.readAsText(f);
+  e.target.value = "";
+};
+document.getElementById("btnReset").onclick = ()=>{
+  if(confirm("編集内容（ステータス・日程・メモなど）をすべてリセットしますか？")){
+    store = {}; save(); refreshAll(); toast("リセットしました");
+  }
+};
+
+refreshAll();
+initFile();
+</script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>仙台牛タン旅行 しおり｜2026.8.29-30</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#faf5ec; --paper:#fffdf8; --ink:#2b3038; --sub:#7a7365;
+  --line:#e8dfd0; --accent:#d9553f; --indigo:#31456e; --gold:#c8a24a;
+  --d1:#d9553f; --d2:#31456e;
+  color-scheme: light;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Zen Maru Gothic',sans-serif;background:var(--cream);color:var(--ink);line-height:1.7}
+.serif{font-family:'Shippori Mincho',serif}
+.wrap{max-width:820px;margin:0 auto;padding:0 18px 80px}
+
+/* ---- cover ---- */
+.cover{position:relative;text-align:center;padding:72px 20px 60px;background:
+  radial-gradient(circle at 15% 20%, rgba(217,85,63,.07), transparent 40%),
+  radial-gradient(circle at 85% 80%, rgba(49,69,110,.08), transparent 40%),
+  var(--cream)}
+.cover .kicker{font-size:12px;letter-spacing:.5em;color:var(--sub);margin-bottom:14px}
+.cover h1{font-family:'Shippori Mincho',serif;font-size:clamp(30px,7vw,46px);font-weight:800;letter-spacing:.12em;color:var(--indigo)}
+.cover h1 .red{color:var(--accent)}
+.cover .dates{margin-top:16px;font-family:'Shippori Mincho',serif;font-size:17px;letter-spacing:.2em}
+.cover .stamp{display:inline-block;margin-top:20px;border:2px solid var(--accent);color:var(--accent);border-radius:999px;padding:5px 22px;font-size:13px;letter-spacing:.3em;transform:rotate(-2deg)}
+.cover .route{margin-top:26px;font-size:12.5px;color:var(--sub);letter-spacing:.1em}
+
+/* ---- section ---- */
+h2.sec{font-family:'Shippori Mincho',serif;font-size:22px;font-weight:800;letter-spacing:.15em;margin:56px 0 6px;display:flex;align-items:center;gap:12px}
+h2.sec::after{content:'';flex:1;height:1px;background:var(--line)}
+.secnote{font-size:12px;color:var(--sub);margin-bottom:18px}
+
+/* ---- day hero ---- */
+.dayhero{border-radius:18px;overflow:hidden;position:relative;height:170px;margin-bottom:22px;box-shadow:0 8px 26px rgba(70,50,20,.18)}
+.dayhero img{width:100%;height:100%;object-fit:cover;display:block}
+.dayhero .ov{position:absolute;inset:0;background:linear-gradient(to right,rgba(20,25,40,.62) 0%,rgba(20,25,40,.15) 65%,transparent)}
+.dayhero .tx{position:absolute;left:22px;bottom:16px;color:#fff}
+.dayhero .tx .d{font-family:'Shippori Mincho',serif;font-size:26px;font-weight:800;letter-spacing:.1em}
+.dayhero .tx .s{font-size:12.5px;opacity:.9;margin-top:2px}
+
+/* ---- timeline ---- */
+.tl{position:relative;padding-left:86px}
+.tl::before{content:'';position:absolute;left:60px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.ev{position:relative;margin-bottom:22px}
+.ev .time{position:absolute;left:-86px;top:2px;width:52px;text-align:right;font-family:'Shippori Mincho',serif;font-weight:800;font-size:14px;color:var(--indigo)}
+.ev::before{content:'';position:absolute;left:-30.5px;top:8px;width:11px;height:11px;border-radius:50%;background:#fff;border:3px solid var(--accent)}
+.ev.d2c::before{border-color:var(--indigo)}
+.ev.move::before{background:var(--line);border-color:#b9ae99;width:7px;height:7px;left:-28.5px;top:10px}
+.ev .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:0 3px 12px rgba(90,70,40,.07)}
+.ev.move .card{background:transparent;border:none;box-shadow:none;padding:4px 2px;}
+.ev.move .mv{font-size:12.5px;color:var(--sub)}
+.ev.move .mv b{color:var(--ink)}
+.ev .t{font-size:15.5px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{font-size:10px;color:#fff;border-radius:999px;padding:2px 10px;font-weight:700;letter-spacing:.05em}
+.tg-kettei{background:#2e9163}.tg-kentou{background:#3f78c3}.tg-yotei{background:#9a9284}
+.ev .desc{font-size:12.5px;color:#554e40;margin-top:6px}
+.ev .desc b{color:var(--accent)}
+.ev .info{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-size:11px;background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:3px 11px;color:var(--sub)}
+.chip.yen{color:var(--accent);font-weight:700}
+.ev .links{margin-top:9px;display:flex;gap:10px;flex-wrap:wrap}
+.ev .links a{font-size:11.5px;font-weight:700;color:var(--indigo);text-decoration:none;border-bottom:1px dashed var(--indigo)}
+.ev .links a:hover{color:var(--accent);border-color:var(--accent)}
+.ev .photo{margin-top:10px;border-radius:10px;overflow:hidden;max-height:150px}
+.ev .photo img{width:100%;height:150px;object-fit:cover;display:block}
+.att{background:#fdf3e4;border:1px solid #eeD9b0;border-radius:10px;padding:8px 12px;font-size:11.5px;color:#7a5b1e;margin-top:9px}
+
+/* ---- info tables ---- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.panel h3{font-family:'Shippori Mincho',serif;font-size:14.5px;color:var(--indigo);letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.panel h3::before{content:'';width:5px;height:16px;background:var(--accent);border-radius:3px}
+table.b{width:100%;border-collapse:collapse;font-size:12.5px}
+table.b td{padding:5.5px 4px;border-bottom:1px dashed var(--line);vertical-align:top}
+table.b td:last-child{text-align:right;white-space:nowrap;font-weight:700}
+table.b tr.sum td{border-bottom:none;color:var(--accent);font-family:'Shippori Mincho',serif;font-size:14px}
+ul.cl{list-style:none;font-size:12.5px}
+ul.cl li{padding:5px 0;border-bottom:1px dashed var(--line);display:flex;gap:9px;align-items:baseline}
+ul.cl li::before{content:'□';color:var(--accent);font-weight:700}
+ul.cl li:last-child{border-bottom:none}
+.foot{text-align:center;margin-top:60px;color:var(--sub);font-size:11px;letter-spacing:.15em}
+.foot .serif{font-size:14px;color:var(--indigo);letter-spacing:.3em;margin-bottom:6px}
+@media print{ .dayhero{height:120px} body{background:#fff} }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="kicker">— ふたりの旅のしおり —</div>
+  <h1>仙台<span class="red">牛タン</span>旅行</h1>
+  <div class="dates">2026.8.29 <span style="font-size:12px">SAT</span> − 8.30 <span style="font-size:12px">SUN</span></div>
+  <div class="stamp">杜の都・松島・秋保</div>
+  <div class="route">横浜 → 仙台 → 秋保温泉（泊）→ 松島 → 仙台 → 横浜</div>
+  <div style="margin-top:18px"><a href="./planner.html" style="display:inline-block;background:var(--indigo);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 22px;border-radius:999px;letter-spacing:.1em">🗺 地図プランナーを開く</a></div>
+</div>
+
+<div class="wrap">
+
+<!-- ================= DAY 1 ================= -->
+<h2 class="sec">1日目｜8.29（土）</h2>
+<div class="secnote">杜の都に着いたら、市場めしと秋保の湯。</div>
+
+<div class="dayhero">
+  <img src="https://www.sentabi.jp/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsiZGF0YSI6MTIyODgxLCJwdXIiOiJibG9iX2lkIn19--f736ab4c407569cdacf30ec941b5f173b162a37a/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJ3ZWJwIiwicmVzaXplX3RvX2ZpdCI6WzY0MCwzNjBdLCJzYXZlciI6eyJxdWFsaXR5Ijo3NX19LCJwdXIiOiJ2YXJpYXRpb24ifX0=--7ce29e04a26f8a838f73d891343c2d4236e606de/%E7%A7%8B%E4%BF%9D.jpg" alt="秋保" loading="lazy">
+  <div class="ov"></div>
+  <div class="tx"><div class="d">DAY 1</div><div class="s">仙台朝市 → アキウインクルーシブ → 秋保温泉</div></div>
+</div>
+
+<div class="tl">
+  <div class="ev move"><div class="time">9:56</div><div class="card"><div class="mv"><b>三ツ沢上町</b> 発 ─ 地下鉄ブルーライン（あざみ野行）→ 10:15 <b>新横浜</b> → のぞみ242号 → 10:45 <b>東京</b> → <b>はやぶさ17号</b>（全席指定）</div></div></div>
+
+  <div class="ev"><div class="time">12:15</div>
+    <div class="card">
+      <div class="t">仙台駅 とうちゃく <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">大きい荷物は駅のコインロッカーへ（西口・東口多数、大型600〜700円）。宿に直行するなら持って行ってもOK。</div>
+      <div class="info"><span class="chip">新幹線 東京→仙台 約1.5時間</span><span class="chip yen">指定席 約11,410円/人（えきねっとトクだ値で割引あり）</span></div>
+    </div>
+  </div>
+
+  <div class="ev"><div class="time">12:20</div>
+    <div class="card">
+      <div class="t">仙台朝市で市場ランチ <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">西口から徒歩5分、約60店の「仙台の台所」。海鮮丼で腹ごしらえ →〆に<b>花笠だんご本舗のずんだ団子</b>（売切れ注意）。時間があればクリスロードの<b>阿部蒲鉾店でひょうたん揚げ</b>もおみくじ付きでおすすめ。</div>
+      <div class="info"><span class="chip">〜14:00</span><span class="chip yen">予算 約1,500円/人</span></div>
+      <div class="links"><a href="https://sendaiasaichi.com/" target="_blank" rel="noopener">仙台朝市 公式</a><a href="https://www.google.com/maps/search/?api=1&query=38.2582,140.8794" target="_blank" rel="noopener">Googleマップ</a></div>
+      <div class="photo"><img src="https://sendaiasaichi.com/img/all/ogp.jpg" alt="仙台朝市" loading="lazy"></div>
+    </div>
+  </div>
+
+  <div class="ev move"><div class="time">14:00</div><div class="card"><div class="mv">仙台駅前<b>63番のりば</b>（西口バスプール）─ タケヤ交通<b>「仙台西部ライナー」</b>約40分・940円 ※1時間に1本程度、便は事前確認</div></div></div>
+
+  <div class="ev"><div class="time">14:40</div>
+    <div class="card">
+      <div class="t">アキウインクルーシブ <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">秋保全体をリゾートとして遊び尽くす企画。<b>定額乗り放題のアキウループバス</b>で、<b>磊々峡</b>の渓谷散歩 → <b>秋保ワイナリー</b>や<b>秋保・里センター</b>などを気ままに周遊。おはぎで有名な<b>主婦の店さいち</b>に寄るのも◎。</div>
+      <div class="info"><span class="chip">〜17:00</span><span class="chip yen">ループバス乗車券（料金は公式で要確認）</span></div>
+      <div class="links"><a href="https://www.sentabi.jp/sendai-areaguide-akiu/akiuinclusive/" target="_blank" rel="noopener">アキウインクルーシブ 公式</a><a href="https://akiusato.jp/" target="_blank" rel="noopener">秋保温泉郷 案内</a></div>
+      <div class="photo"><img src="https://www.sentabi.jp/sendai-areaguide-akiu/akiuinclusive/img/ogp.jpg" alt="アキウインクルーシブ" loading="lazy"></div>
+    </div>
+  </div>
+
+  <div class="ev"><div class="time">17:00</div>
+    <div class="card">
+      <div class="t">秋保温泉（宿泊） <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">開湯1500年・日本三御湯。宿は2択で検討中（どちらも<b>夕食付きプランがおすすめ</b>。秋保は夜の外食選択肢が少なく、翌日は牛タン2軒が控えているので、夜は宿でゆっくりが正解）。<br>
+      ① <b>ホテルニュー水戸屋 アネックス</b> — 本館の大小16種の湯めぐりOK。2食付き15,000円前後〜とコスパ重視<br>
+      ② <b>奥州秋保温泉 蘭亭</b> — 夕食は会席で部屋食/個室が選べる。朝食は出汁テーマのバイキング約50種、ラウンジドリンク無料。2名なら19,500円〜/人</div>
+      <div class="info"><span class="chip yen">2食付き 約15,000〜25,000円/人（要予約）</span></div>
+      <div class="att">⚠ 日帰りに変更する場合、仙台行きの最終バスは19時前後と早めなので注意。宿泊が安心。</div>
+      <div class="links"><a href="https://www.mitoya-group.co.jp/annex/" target="_blank" rel="noopener">ニュー水戸屋アネックス</a><a href="https://www.akiu-rantei.com/" target="_blank" rel="noopener">蘭亭</a><a href="https://akiusato.jp/" target="_blank" rel="noopener">秋保温泉郷</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DAY 2 ================= -->
+<h2 class="sec">2日目｜8.30（日）</h2>
+<div class="secnote">日本三景をめぐって、〆は牛タン。</div>
+
+<div class="dayhero">
+  <img src="https://www.sentabi.jp/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsiZGF0YSI6MTIyODg2LCJwdXIiOiJibG9iX2lkIn19--e0aa6899628ce139ed6be7f0771ceed81accbb49/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJ3ZWJwIiwicmVzaXplX3RvX2ZpdCI6WzY0MCwzNjBdLCJzYXZlciI6eyJxdWFsaXR5Ijo3NX19LCJwdXIiOiJ2YXJpYXRpb24ifX0=--7ce29e04a26f8a838f73d891343c2d4236e606de/%E6%9D%BE%E5%B3%B6.webp" alt="松島" loading="lazy">
+  <div class="ov"></div>
+  <div class="tx"><div class="d">DAY 2</div><div class="s">松島 → 仙台のみ歩き → 牛タンで〆</div></div>
+</div>
+
+<div class="tl">
+  <div class="ev move d2c"><div class="time">9:15</div><div class="card"><div class="mv"><b>秋保温泉湯元</b> 発 ─ 西部ライナー/宮城交通 約40〜50分・940円 → 10:00頃 <b>仙台駅</b>（荷物をロッカーへ）</div></div></div>
+
+  <div class="ev move d2c"><div class="time">10:16</div><div class="card"><div class="mv"><b>仙台駅</b> ─ JR仙石線（石巻方面）約40分・420円 → 10:56 <b>松島海岸駅</b> ※遊覧船乗り場まで徒歩10分</div></div></div>
+
+  <div class="ev d2c"><div class="time">11:00</div>
+    <div class="card">
+      <div class="t">松島島巡り観光船（仁王丸） <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">日本三景・松島湾を50分で一周。<b>2階席がおすすめ</b>。11時台の便に乗るならWeb事前予約が安心（割引特典あり）。</div>
+      <div class="info"><span class="chip">50分</span><span class="chip yen">1,500円/人（Web予約割引あり）</span></div>
+      <div class="links"><a href="https://www.matsushima.or.jp/" target="_blank" rel="noopener">観光船 公式・Web予約</a><a href="https://www.google.com/maps/search/?api=1&query=38.3672,141.0621" target="_blank" rel="noopener">Googleマップ</a></div>
+    </div>
+  </div>
+
+  <div class="ev d2c"><div class="time">12:00</div>
+    <div class="card">
+      <div class="t">海鮮ランチ＆円通院 or 瑞巌寺 <span class="tag tg-kentou">検討中</span></div>
+      <div class="desc">昼は松島名物の<b>かき・穴子丼</b>。食後は<b>円通院</b>（縁結びの寺・拝観500円、ふたりで数珠作り体験も）か、伊達政宗が再建した国宝<b>瑞巌寺</b>へ。ずんだ茶寮 松島海岸駅店でシェイクも飲める。</div>
+      <div class="info"><span class="chip">〜14:00</span><span class="chip yen">昼食 約2,000円＋拝観 500〜1,000円</span></div>
+      <div class="links"><a href="https://www.entuuin.or.jp/" target="_blank" rel="noopener">円通院</a><a href="https://www.zuiganji.or.jp/" target="_blank" rel="noopener">瑞巌寺</a></div>
+      <div class="photo"><img src="https://www.entuuin.or.jp/images/main__news--image-09.jpg" alt="円通院" loading="lazy"></div>
+    </div>
+  </div>
+
+  <div class="ev move d2c"><div class="time">14:10</div><div class="card"><div class="mv"><b>松島海岸</b> ─ JR仙石線 約40分 → 14:50頃 <b>仙台駅</b></div></div></div>
+
+  <div class="ev d2c"><div class="time">15:00</div>
+    <div class="card">
+      <div class="t">仙台のみ歩き <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">レトロな<b>文化横丁・壱弐参（いろは）横丁</b>で軽く一杯 → アーケードを抜けて一番町方面へ。日曜なので早い時間から開いている店を狙うのが吉。飲みすぎ注意 — このあと牛タン2軒はしごが待っています。</div>
+      <div class="info"><span class="chip">〜17:00</span><span class="chip yen">予算 約2,000円/人</span></div>
+      <div class="links"><a href="https://www.sentabi.jp/nightlife" target="_blank" rel="noopener">仙台夜時間（せんだい旅日和）</a></div>
+    </div>
+  </div>
+
+  <div class="ev d2c"><div class="time">17:00</div>
+    <div class="card">
+      <div class="t">牛タンはしご①：牛たん料理 閣 ブランドーム本店 <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">のみ歩きの流れで一番町ブレーメン通りへ（徒歩圏内）。ここでしか食べられない名物<b>たんたたき</b>（ハーフ2,178円）＋一杯。創業昭和63年の名店。焼きは次の司にとっておくのが、はしごのコツ。</div>
+      <div class="info"><span class="chip">17:00開店・混雑前に</span><span class="chip yen">約2,500〜3,000円/人</span></div>
+      <div class="links"><a href="https://gyutankaku.in/" target="_blank" rel="noopener">閣 公式</a><a href="https://www.google.com/maps/search/?api=1&query=38.2609,140.8706" target="_blank" rel="noopener">Googleマップ</a></div>
+      <div class="photo"><img src="https://gyutankaku.in/wp-content/themes/official-theme/assets/img/index/img_mv01.jpg" alt="牛たん料理 閣" loading="lazy"></div>
+    </div>
+  </div>
+
+  <div class="ev d2c"><div class="time">18:30</div>
+    <div class="card">
+      <div class="t">牛タンはしご②：牛タン焼専門店 司 東口店 <span class="tag tg-kettei">決定</span></div>
+      <div class="desc">〆は<b>厚切り芯たん定食</b>（2,266円〜）。仙台駅東口徒歩2分（ダイワロイネット1F）なので、食後そのまま新幹線へ。お土産は駅2Fで：<b>ずんだ餅・笹かま・萩の月</b>。</div>
+      <div class="info"><span class="chip">夜23時まで営業</span><span class="chip yen">約2,300〜2,800円/人</span></div>
+      <div class="links"><a href="https://www.gyutan-tsukasa.co.jp/" target="_blank" rel="noopener">司 公式</a><a href="https://www.google.com/maps/search/?api=1&query=38.2590,140.8875" target="_blank" rel="noopener">Googleマップ</a></div>
+      <div class="photo"><img src="https://www.gyutan-tsukasa.co.jp/images/r_500px500px.jpg" alt="牛タン焼専門店 司" loading="lazy"></div>
+    </div>
+  </div>
+
+  <div class="ev move d2c"><div class="time">20:00</div><div class="card"><div class="mv"><b>仙台駅</b> 発 ─ はやぶさ（要指定席予約）→ 21:30頃 <b>東京</b> → 新横浜 → <b>三ツ沢上町</b>（23時前着）</div></div></div>
+</div>
+
+<!-- ================= info ================= -->
+<h2 class="sec">おかね と じゅんび</h2>
+<div class="grid2">
+  <div class="panel">
+    <h3>予算目安（1人あたり）</h3>
+    <table class="b">
+      <tr><td>新幹線 往復（東京⇔仙台）</td><td>約22,800円</td></tr>
+      <tr><td>現地交通（バス・電車・ループバス）</td><td>約3,500円</td></tr>
+      <tr><td>遊覧船＋拝観</td><td>約2,500円</td></tr>
+      <tr><td>食事（朝市・海鮮・のみ歩き・牛タン2軒）</td><td>約11,000円</td></tr>
+      <tr><td>宿泊（秋保温泉・2食付き）</td><td>15,000〜25,000円</td></tr>
+      <tr class="sum"><td>合計目安</td><td>約55,000〜65,000円</td></tr>
+    </table>
+    <div class="att" style="margin-top:10px">えきねっと「トクだ値」なら新幹線が5〜15%オフ。早めの予約が吉。</div>
+  </div>
+  <div class="panel">
+    <h3>やることリスト</h3>
+    <ul class="cl">
+      <li>新幹線 予約（えきねっと：行き はやぶさ17号／帰り 19時台）</li>
+      <li>秋保温泉の宿 予約（ニュー水戸屋アネックス or 蘭亭・夕食付きプラン推奨）</li>
+      <li>松島遊覧船 Web予約（割引あり）</li>
+      <li>アキウループバスの料金・時刻を公式で確認</li>
+      <li>円通院 数珠作り体験の受付時間を確認</li>
+      <li>閣（たんたたき）・司の営業時間と混雑をチェック（閣は17時開店直後が狙い目）</li>
+      <li>浴衣・温泉セット／モバイルバッテリー／晴雨兼用傘</li>
+    </ul>
+  </div>
+</div>
+
+<div class="grid2" style="margin-top:14px">
+  <div class="panel">
+    <h3>移動メモ</h3>
+    <table class="b">
+      <tr><td>仙台駅→秋保温泉</td><td>63番のりば 西部ライナー 40分・940円</td></tr>
+      <tr><td>秋保エリア内</td><td>アキウループバス（定額乗り放題）</td></tr>
+      <tr><td>秋保→仙台駅</td><td>西部ライナー/宮城交通 40〜50分・940円</td></tr>
+      <tr><td>仙台⇔松島海岸</td><td>JR仙石線 40分・420円</td></tr>
+      <tr><td>市内観光（予備）</td><td>るーぷる仙台 1日券 630円</td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h3>リンク</h3>
+    <table class="b">
+      <tr><td><a href="https://docs.google.com/spreadsheets/d/1NxzkDm7ZE2aO5osK7Iy8UJwgxCCtARY7nkYbgjXjTAg/edit" target="_blank" rel="noopener" style="color:var(--indigo)">プランナーデータ（スプレッドシート）</a></td><td></td></tr>
+      <tr><td><a href="https://www.sentabi.jp/" target="_blank" rel="noopener" style="color:var(--indigo)">せんだい旅日和（公式観光サイト）</a></td><td></td></tr>
+      <tr><td><a href="https://www.sentabi.jp/sendai-areaguide-akiu/akiuinclusive/" target="_blank" rel="noopener" style="color:var(--indigo)">アキウインクルーシブ</a></td><td></td></tr>
+      <tr><td><a href="https://www.matsushima.or.jp/" target="_blank" rel="noopener" style="color:var(--indigo)">松島島巡り観光船</a></td><td></td></tr>
+      <tr><td><a href="https://takeyakotsu.jp/seibu-liner/" target="_blank" rel="noopener" style="color:var(--indigo)">西部ライナー時刻表（タケヤ交通）</a></td><td></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  <div class="serif">よい旅を。</div>
+  SENDAI GYUTAN TRIP — 2026.8.29-30<br>
+  ※時刻・料金は目安です。最新情報は各公式サイトでご確認ください。写真は各公式サイト等へのリンク参照です。
+</div>
+
+</div>
+</body>
+</html>

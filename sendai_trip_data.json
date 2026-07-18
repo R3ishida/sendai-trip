@@ -1,0 +1,20 @@
+{
+  "ajitasuke": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "rikyu": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "zenjiro": { "status": "候補", "day": 0, "rating": 5, "note": "" },
+  "kisuke": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "asaichi": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "azumaya": { "status": "候補", "day": 0, "rating": 3, "note": "" },
+  "zunda": { "status": "候補", "day": 0, "rating": 5, "note": "" },
+  "abekama": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "zuihoden": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "aoba": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "jozenji": { "status": "候補", "day": 0, "rating": 3, "note": "" },
+  "uminomori": { "status": "候補", "day": 0, "rating": 3, "note": "" },
+  "yuransen": { "status": "候補", "day": 0, "rating": 5, "note": "" },
+  "entuin": { "status": "候補", "day": 0, "rating": 5, "note": "" },
+  "zuiganji": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "akiu": { "status": "候補", "day": 0, "rating": 5, "note": "" },
+  "akiuotaki": { "status": "候補", "day": 0, "rating": 4, "note": "" },
+  "sakunami": { "status": "候補", "day": 0, "rating": 3, "note": "" }
+}
